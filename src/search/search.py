@@ -29,16 +29,17 @@ def load_msa(filepath: str):
     Load MSA from file in stockholm format.
 
     :param filepath: a path to stockholm file containing the alignment
-    :return: pyhmmer.easel.MSA object
+    :return: pyhmmer.plan7.HMM object
     """
-    with pyhmmer.easel.MSAFile( alignfile,
+    with pyhmmer.easel.MSAFile( filepath,
                                 format = "stockholm",
                                 digital=True,
                                 alphabet=alphabet) as msa_file:
         msa = next(msa_file)
         msa.name = b"placeholder" # must be set
+        hmm, _, _ = builder.build_msa(msa, background)
 
-    return msa
+    return [hmm]
 
 
 def parse_hit(hit, db):

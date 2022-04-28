@@ -30,7 +30,7 @@ def hit_measure_update(hits):
 
 def write_outputs(hits, outdir, name, alignment=False):
     pd.DataFrame(hits).to_csv(outdir / f"{name}.csv", index=False) # csv file
-    fasta.write_hits(iter0, outdir / f"{name}.fasta")
+    fasta.write_hits(hits, outdir / f"{name}.fasta")
     if alignment:
         print("Aligning hits")
         clustalo.main(outdir / f"{name}.fasta", outdir / f"{name}.sto")
@@ -43,10 +43,10 @@ if __name__ == '__main__':
     outdir = ROOT / 'searches/halocyanin/archaea/uniprot'
 
     # ITER 0
-    iter0 = search.main("protein", query, db, group, outdir)
-    hit_uniprot_update(iter0)
-    hit_measure_update(iter0)
-    write_outputs(iter0, outdir, "iter0", alignment=True)
+    # iter0 = search.main("protein", query, db, group, outdir)
+    # hit_uniprot_update(iter0)
+    # hit_measure_update(iter0)
+    # write_outputs(iter0, outdir, "iter0", alignment=True)
 
     # ITER 1
     msafile = outdir / "iter0.sto"
