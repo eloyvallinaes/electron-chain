@@ -4,39 +4,53 @@ Top level script to run a search pipeline
 
 import pandas as pd
 from src.config import QUERY_DIR, ROOT
-from src.search import search, uniprotdata, measure, filter, fasta
+from src.search import search, uniprotdata, measure, filter, fasta, clustalo
 
-db = "ncbi"
-group = "ClusterII"
-query = QUERY_DIR / "P39442.fasta"
-outdir = ROOT / 'searches/halocyanin/clusterii/ncbi'
+def hit_uniprot_update(hits):
+    """
+    Map proteins in hits to uniprot and update list records
+    """
+    accs = [hit['id'] for hit in hits]
+    records = uniprotdata.retrieve(accs, db)
+    for hit in hits.copy():
+        for record in records:
+            if hit['id'] == record['id']:
+                hit.update(record)
+                break
+        else:
+            hits.remove(hit) # no up mapping found
 
-# first search
-iter0 = search.main(query, db, group, outdir)
-
-# map hits to uniprot
-accs = [hit['id'] for hit in iter0]
-records = uniprotdata.retrieve(accs, db)
-for hit in iter0.copy():
-    for record in records:
-        if hit['id'] == record['id']:
-            hit.update(record)
-            break
-    else:
-        iter0.remove(hit) # no up mapping found
-
-# measure physicochemical properties
-for hit in iter0:
-    try:
+def hit_measure_update(hits):
+    """
+    Measure physicochemical properties of sequences and update list records
+    """
+    for hit in hits:
         phys = measure.measurement(hit)
         hit.update(phys)
-    except KeyError:
-        print(f"Couldn't measure {hit}")
+
+def write_outputs(hits, outdir, name, alignment=False):
+    pd.DataFrame(hits).to_csv(outdir / f"{name}.csv", index=False) # csv file
+    fasta.write_hits(iter0, outdir / f"{name}.fasta")
+    if alignment:
+        print("Aligning hits")
+        clustalo.main(outdir / f"{name}.fasta", outdir / f"{name}.sto")
 
 
-# selection rules: top hit per proteome, name contains pattern and mw threshold
-# iter0 = filter.main(iter0, "[Hh]alocyanin", 50000)
+if __name__ == '__main__':
+    db = "uniprot"
+    group = "Archaea"
+    query = QUERY_DIR / "P39442.fasta"
+    outdir = ROOT / 'searches/halocyanin/archaea/uniprot'
 
-# write output
-pd.DataFrame(iter0).to_csv(outdir / "iter0.csv", index=False) # csv file
-fasta.write_hits(iter0, outdir / "iter0.fasta")
+    # ITER 0
+    iter0 = search.main("protein", query, db, group, outdir)
+    hit_uniprot_update(iter0)
+    hit_measure_update(iter0)
+    write_outputs(iter0, outdir, "iter0", alignment=True)
+
+    # ITER 1
+    msafile = outdir / "iter0.sto"
+    iter1 = search.main("msa", msafile, db, group, outdir)
+    hit_uniprot_update(iter1)
+    hit_measure_update(iter1)
+    write_outputs(iter1, outdir, "iter1", alignment=False)
