@@ -61,9 +61,12 @@ def runsearch(mode: str, query: list, targets: list, db: str):
     :param targets: a list of len > 1 containing DigitalSequences
     :return: a list of dictionaries with id and evalue fields
     """
-    if len(query) > 1 or len(targets) <= 1:
-        message = "Too many queries or too few targets"
-        raise ValueError(message)
+    if len(targets) == 0:
+        message = "Target list empty"
+        raise RuntimeError(message)
+    elif len(targets) == 1:
+        message = "Single target in target list"
+        raise RuntimeError(message)
 
     if mode == "protein":
         hits = list( pyhmmer.hmmer.phmmer(query, targets) )[0]
@@ -96,9 +99,15 @@ def main(mode, queryfilepath, db, group, outdir, n=0):
     results = []
     c = 0
     for file in targets_dir.iterdir():
-        print(f"Searching in: {file.stem}")
         targets = load_sequence(file)
-        hits = runsearch(mode, query, targets, db)
+
+        try:
+            hits = runsearch(mode, query, targets, db)
+        except RuntimeError as err:
+            if str(err) == "Single target in target list":
+                print(f"{err}. Skipping {file.stem}")
+                continue
+
         for hit in hits:
             hit.update( {"proteomecode" : file.stem} )
 

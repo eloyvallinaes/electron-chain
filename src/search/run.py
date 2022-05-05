@@ -38,15 +38,22 @@ def write_outputs(hits, outdir, name, alignment=False):
 
 if __name__ == '__main__':
     db = "uniprot"
-    group = "Archaea"
+    group = "Bacteria"
     query = QUERY_DIR / "P39442.fasta"
-    outdir = ROOT / 'searches/halocyanin/archaea/uniprot'
+    outdir = ROOT / 'searches/halocyanin/bacteria/uniprot'
 
     # ITER 0
-    # iter0 = search.main("protein", query, db, group, outdir)
-    # hit_uniprot_update(iter0)
-    # hit_measure_update(iter0)
-    # write_outputs(iter0, outdir, "iter0", alignment=True)
+    iter0 = search.main("protein", query, db, group, outdir)
+    hit_uniprot_update(iter0)
+    hit_measure_update(iter0)
+    iter0 = filter.main(
+                        iter0,
+                        "cyanin|cupredoxin|azurin",
+                        50000,
+                        4000 # max sequences allowed by clustalw
+                    )
+    write_outputs(iter0, outdir, "iter0", alignment=True)
+    print("ITER 0: Done")
 
     # ITER 1
     msafile = outdir / "iter0.sto"
@@ -54,3 +61,4 @@ if __name__ == '__main__':
     hit_uniprot_update(iter1)
     hit_measure_update(iter1)
     write_outputs(iter1, outdir, "iter1", alignment=False)
+    print("ITER 1: Done")

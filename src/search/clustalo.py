@@ -1,6 +1,7 @@
 #!/usr/bin/python
 """
-Run clustal omega on EBI over their REST API
+An interface for obtaining basic clustal omega alignments through
+the EBI REST API.
 """
 
 import pyhmmer
@@ -51,7 +52,7 @@ def retrieve(jobid, stofilepath):
 def main(fastafile, stofilepath):
     jobid = submit(fastafile)
     while not check_finished(jobid):
-        sleep(5)
+        sleep(30)
 
     retrieve(jobid, stofilepath)
 
