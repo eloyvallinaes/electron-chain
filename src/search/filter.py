@@ -16,9 +16,12 @@ def top_per_proteome(hits):
     :returns: pd.DataFrame
 
     """
-    hitsdf = pd.DataFrame(hits)
-    return hitsdf.sort_values("evalue", ascending=True) \
-                 .drop_duplicates(["proteomecode"], keep="first")
+    numcols = ["mass", "fPos", "fNeg", "sasa", "net", "ncd", "fFatty"]
+    dtypes = {c: float for c in numcols}
+    return pd.DataFrame(hits).astype(dtypes)\
+             .sort_values("evalue", ascending=True) \
+             .drop_duplicates(["proteomecode"], keep="first") \
+             .reset_index(drop=True)
 
 
 def main(hits, pattern=".*", mw=np.Inf, n=0):
