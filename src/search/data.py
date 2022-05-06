@@ -47,7 +47,7 @@ def isocharge_draw(data, level, name, colorby, n=None):
     groups = df[colorby].unique()
     palette = sns.color_palette("tab10")
     colors = {g: c for g, c in zip(groups, palette)}
-    df["color"] = df[colorby].map(colors)
+    colors['nan'] = "lightgray"
 
 
     fig = plt.figure(figsize=(6,6))
@@ -57,22 +57,31 @@ def isocharge_draw(data, level, name, colorby, n=None):
                 [series.fPos_x, series.fPos_y],
                 [series.fNeg_x, series.fNeg_y],
                 linewidth = 0.5,
-                marker = "o",
+                marker = "",
                 zorder = 1,
-                markersize= 4,
-                markerfacecolor = series.color,
-                color = series.color,
-                markeredgecolor="k"
+                color = "k",
             )
+    for g, subset in df.groupby(colorby):
         ax.scatter(
-                    series.fPos_x,
-                    series.fNeg_x,
-                    marker = "X",
-                    zorder = 2,
-                    facecolor = series.color,
+                    subset.fPos_y, # proteome coordinates
+                    subset.fNeg_y,
+                    marker = "o",
+                    zorder = 1,
+                    facecolor = colors[g],
                     edgecolor = "k",
                     s= 50,
-                    label = series.species,
+                    label = g,
+
+                )
+        ax.scatter(
+                    subset.fPos_x, # protein coordinates
+                    subset.fNeg_x,
+                    marker = "X",
+                    zorder = 2,
+                    facecolor = colors[g],
+                    edgecolor = "k",
+                    s= 50,
+                    label = g,
 
                 )
     for i in np.arange(0, 0.25, 0.025):
@@ -85,21 +94,56 @@ def isocharge_draw(data, level, name, colorby, n=None):
     return fig
 
 
-def taxonomy_draw(df, x, y, category, bg=True, title=""):
-    raise NotImplementedError()
-    # fig = plt.figure(figsize=(6,6))
-    # ax  = fig.subplots(1,1)
-    # # background
-    # if bg:
-    #     ax.scatter(dfa[x], dfa[y], color = "lightgray", zorder = 0)
-    #
-    # # foreground
-    # for name, subset in df.groupby(category, dropna=False):
-    #     name = str(name)
-    #     ax.scatter( subset[x], subset[y], label = name,
-    #                 edgecolor = "w", marker = "o", linewidth = 0.2, zorder = 2)
-    # ax.legend(bbox_to_anchor=(1,1))
-    # ax.set_xlabel(x)
-    # ax.set_ylabel(y)
-    # ax.set_title(title)
-    # return fig
+def taxonomy_draw( ax, df, x, y, rank = "kingdom", name = "Bacteria",
+                   lower = "phylum", groups = 10, background = True,
+                   colors = None, **kwargs
+            ):
+    """
+    Draw 2D scatter and color by taxonomic group.
+
+    args
+    :ax param: a plt.Axes instance where to plot
+    :df param: a pd.DataFrame instance with columns x,y and taxonomical
+    :rank param: str, one of <kingdom|phylum|class|order|family|genus>
+    :name param: str, the group at rank to split
+    :lower param: str, the lower rank into which the data is split
+    :groups param: int or list, if int, the number of groups to consider at lower rank,
+                   if list, the names of the groups
+    :background param: bool, if True, include all observation in gray
+    :colors param: a dictionary mapping groups to colors, if None autogenerate
+
+    kwargs
+    pass to ax.scatter to modify marker properties eg. s (size)
+    """
+    # background
+    if background:
+        ax.scatter(df[x], df[y], c="lightgray", s=20, zorder=1, label="")
+
+    # groups
+    if type(groups) == int:
+        subset = df[df[rank] == name]
+        groups = subset[lower].value_counts().index[:groups]
+
+    # color for each group
+    if not colors:
+        colors = make_cmap(groups)
+
+    for group in groups:
+        data = df[df[lower] == group]
+        ax.scatter(
+                    x=data[x], y=data[y], c = colors[group], label = group,
+                    zorder = 10, edgecolor = "w", linewidth = 0.3, **kwargs
+                )
+    ax.set_title(f"{rank} = {name}; into {lower}")
+    return ax
+
+
+def make_cmap(groups):
+    """
+    Associate tab10 colors to names in a list of groups.
+    """
+    palette = sns.color_palette('tab10', len(groups))
+    # lightgray RGB code, supress warning about ragged ndarrays
+    palette.append((211/254, 211/254, 211/254))
+    colordict = {x: [palette[i]] for i, x in enumerate(groups)}
+    return colordict
