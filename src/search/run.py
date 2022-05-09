@@ -2,11 +2,16 @@
 Top level script to run a search pipeline
 """
 
+import os
+import json
+import pathlib
+import argparse
+import numpy as np
 import pandas as pd
 from src.config import QUERY_DIR, ROOT
 from src.search import search, uniprotdata, measure, filter, fasta, clustalo
 
-def hit_uniprot_update(hits):
+def hit_uniprot_update(hits, db):
     """
     Map proteins in hits to uniprot and update list records
     """
@@ -37,28 +42,76 @@ def write_outputs(hits, outdir, name, alignment=False):
 
 
 if __name__ == '__main__':
-    db = "uniprot"
-    group = "Bacteria"
-    query = QUERY_DIR / "P39442.fasta"
-    outdir = ROOT / 'searches/halocyanin/bacteria/uniprot'
+    description = "Run a search pipeline mimicking jackhmmer."
+    parser = argparse.ArgumentParser(
+        description="Run a search pipeline"
+    )
+    parser.add_argument(
+        'db',
+        choices=["uniprot", "ncbi"]
+    )
+    parser.add_argument(
+        'group',
+        type=str,
+        help="A subset of db where to search"
+    )
+    parser.add_argument(
+        'query',
+        type=pathlib.Path,
+        help="Fasta file with single sequence to initialise the search"
+    )
+    parser.add_argument(
+        'outdir',
+        type=pathlib.Path,
+        help="A directory where to store outputs"
+    )
+    parser.add_argument(
+        '--resume',
+        action='store_true',
+        help="Resume iter 1 assuming iter 0 alignment is present in outdir",
+    )
+    parser.add_argument(
+        '--filter-name',
+        default = ".*",
+        help = "A pattern for name filtering after iter 0., Default is '.*'"
+    )
+    parser.add_argument(
+        '--filter-mw',
+        type=float,
+        default=np.inf,
+        help="A MW threshold in Da to filter hits after iter 0. Default is np.inf"
+    )
 
-    # ITER 0
-    iter0 = search.main("protein", query, db, group, outdir)
-    hit_uniprot_update(iter0)
-    hit_measure_update(iter0)
-    iter0 = filter.main(
-                        iter0,
-                        "cyanin|cupredoxin|azurin",
-                        50000,
-                        4000 # max sequences allowed by clustalw
-                    )
-    write_outputs(iter0, outdir, "iter0", alignment=True)
-    print("ITER 0: Done")
+    args = parser.parse_args()
+
+    # CREATE OUTPUT DIR IF NECESSARY
+    if not os.path.isdir(args.outdir):
+        os.makedirs(args.outdir)
+
+    # WRITE LOG
+    with open(args.outdir / "log.txt", "w") as logfile:
+        logfile.write("Ran search.run with parameters:")
+        for k, v in vars(args).items():
+            logfile.write(f'{k}: {v}\n')
+
+    if not args.resume:
+        # ITER 0
+        iter0 = search.main("protein", args.query, args.db, args.group, args.outdir)
+        hit_uniprot_update(iter0, db=args.db)
+        hit_measure_update(iter0)
+        iter0 = filter.main(
+                            iter0,
+                            args.filter_name,
+                            args.filter_mw,
+                            4000 # max sequences allowed by clustalw
+                        )
+        write_outputs(iter0, args.outdir, "iter0", alignment=True)
+        print("ITER 0: Done")
 
     # ITER 1
-    msafile = outdir / "iter0.sto"
-    iter1 = search.main("msa", msafile, db, group, outdir)
-    hit_uniprot_update(iter1)
+    msafile = args.outdir / "iter0.sto"
+    iter1 = search.main("msa", msafile, args.db, args.group, args.outdir)
+    hit_uniprot_update(iter1, db=args.db)
     hit_measure_update(iter1)
-    write_outputs(iter1, outdir, "iter1", alignment=False)
+    write_outputs(iter1, args.outdir, "iter1", alignment=False)
     print("ITER 1: Done")
