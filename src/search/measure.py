@@ -59,7 +59,7 @@ def measure_file(csvfile):
 
 
 def main(infilepath, outfilepath):
-    phys = measure(infilepath)
+    phys = measure_file(infilepath)
     pd.DataFrame(phys).to_csv(outfilepath, index=False)
 
 

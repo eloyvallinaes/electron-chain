@@ -11,6 +11,7 @@ Arguments:
 
 """
 import os
+import re
 import sys
 import csv
 import requests
@@ -22,6 +23,7 @@ KBCOLUMNS = [
                 'mass',
                 'sequence',
                 'protein names',
+                'proteome',
                 'lineage(SUPERKINGDOM)',
                 'lineage(PHYLUM)',
                 'lineage(CLASS)',
@@ -37,6 +39,7 @@ KEYS = [
         'mass',
         'sequence',
         'name',
+        'upproteome',
         'kingdom',
         'phylum',
         'class',
@@ -59,6 +62,9 @@ def parse(r):
             ]
     for record in records:
         record['mass'] = float( record['mass'].replace(",", "") )
+        m = re.match("UP[0-9]{9}", record["upproteome"])
+        record["upproteome"] = m.group(0) if m else None
+        
     return records
 
 
@@ -84,14 +90,13 @@ def retrieve(accs: list, db):
 
 
 def main(infilepath, outfilepath, db):
-    if dbin not in ["uniprot", "ncbi"]:
+    if db not in ["uniprot", "ncbi"]:
         raise ValueError(f"db must be either 'ncbi' or 'uniprot' not {db}")
 
     dtype = {"mass": float}
-    idfrom = "ACC" if db == "uniprot" else "EMBL"
     with open(infilepath) as csvfile:
         accs = [line.split(",")[0] for line in csvfile]
-        records = retrieve(accs, idfrom)
+        records = retrieve(accs, db)
         pd.DataFrame(records).astype(dtype) \
           .to_csv(outfilepath, index = False)
 

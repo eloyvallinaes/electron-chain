@@ -26,7 +26,48 @@ def load_proteomedata(db):
     return pd.concat(data)
 
 
-def isocharge_draw(data, level, name, colorby, n=None):
+def isocharge_artist(ax, df, label = None, color = "tab:blue", diagonals=True):
+    for _, series in df.iterrows():
+        ax.plot(
+                [series.fPos_x, series.fPos_y],
+                [series.fNeg_x, series.fNeg_y],
+                linewidth = 0.5,
+                marker = "",
+                zorder = 1,
+                color = color,
+            )
+    # circles
+    ax.scatter(
+                df.fPos_y, # proteome coordinates
+                df.fNeg_y,
+                marker = "o",
+                zorder = 1,
+                facecolor = color,
+                edgecolor = "k",
+                linewidth = 0.2,
+                s= 50,
+
+            )
+    # crosses
+    ax.scatter(
+                df.fPos_x, # protein coordinates
+                df.fNeg_x,
+                marker = "X",
+                zorder = 2,
+                facecolor = color,
+                edgecolor = "k",
+                linewidth = 0.2,
+                s= 50,
+                label = label,
+            )
+
+    if diagonals:
+        # iso-charge diagonals
+        for i in np.arange(0, 0.25, 0.025):
+            ax.plot([0, 0.3 - i], [i ,0.3], linestyle = "--", color= "k", zorder = 5)
+
+def isocharge_draw(ax, df, rank = "", name = "",
+                   lower = "", groups = 10, colors = None):
     """
     Draw fPos-fNeg plots with proteome and protein data. Diagonals represent
     coordinates of identical charge (isocharge lines).
@@ -35,63 +76,42 @@ def isocharge_draw(data, level, name, colorby, n=None):
         fPos_x, fNeg_x -> protein features;
         fPos_y,fNeg_y -> proteome features;
         kingdom, phylum, class, order, family, genus -> taxonomic categories
-    :param level: one of kingdom, phylum, class, order, family, genus as str
-    :param name: a valid taxon name at the level
-    :param n: an integer or None limiting the plotting groups
+    :rank param: str, one of <kingdom|phylum|class|order|family|genus>
+    :name param: str, the group at rank to split
+    :lower param: str, lower rank or any categorical to group and color data
+    :groups param: int or list, if int, the number of groups to consider at lower rank,
+                   if list, the names of the groups
+    :background param: bool, if True, include all observation in gray
+    :colors param: a dictionary mapping groups to colors, if None autogenerate
     """
-    if n:
-        df = data[data[level] == name][:n].copy()
+
+    # groups
+    if type(groups) == int:
+        if rank == "" or name == "":
+            data = df
+        else:
+            data = df[df[rank] == name]
+
+        if lower == "":
+            groups = []
+        else:
+            groups = data[lower].value_counts().index[:groups]
+
+    # color for each group
+    if not colors:
+        colors = make_cmap(groups)
+
+    if len(groups) == 0:
+        isocharge_artist(ax, data)
     else:
-        df = data[data[level] == name].copy()
-
-    groups = df[colorby].unique()
-    palette = sns.color_palette("tab10")
-    colors = {g: c for g, c in zip(groups, palette)}
-    colors['nan'] = "lightgray"
-
-
-    fig = plt.figure(figsize=(6,6))
-    ax  = fig.subplots(1,1)
-    for _, series in df.iterrows():
-        ax.plot(
-                [series.fPos_x, series.fPos_y],
-                [series.fNeg_x, series.fNeg_y],
-                linewidth = 0.5,
-                marker = "",
-                zorder = 1,
-                color = "k",
-            )
-    for g, subset in df.groupby(colorby):
-        ax.scatter(
-                    subset.fPos_y, # proteome coordinates
-                    subset.fNeg_y,
-                    marker = "o",
-                    zorder = 1,
-                    facecolor = colors[g],
-                    edgecolor = "k",
-                    s= 50,
-                    label = g,
-
-                )
-        ax.scatter(
-                    subset.fPos_x, # protein coordinates
-                    subset.fNeg_x,
-                    marker = "X",
-                    zorder = 2,
-                    facecolor = colors[g],
-                    edgecolor = "k",
-                    s= 50,
-                    label = g,
-
-                )
-    for i in np.arange(0, 0.25, 0.025):
-        ax.plot([0, 0.3 - i], [i ,0.3], linestyle = "--", color= "k", zorder = 5)
+        for g in groups:
+            d = data[data[lower] == g]
+            isocharge_artist(ax, d, label = g, color = colors[g])
 
     ax.set_xlabel("fraction positve (KR)")
     ax.set_ylabel("fraction negative (DE)")
-    ax.set_title(f"taxonomy({level}) = {name}")
-    # ax.legend()
-    return fig
+    ax.set_title(f"taxonomy({rank}) = {name}")
+    return ax
 
 
 def taxonomy_draw( ax, df, x, y, rank = "kingdom", name = "Bacteria",
@@ -106,7 +126,7 @@ def taxonomy_draw( ax, df, x, y, rank = "kingdom", name = "Bacteria",
     :df param: a pd.DataFrame instance with columns x,y and taxonomical
     :rank param: str, one of <kingdom|phylum|class|order|family|genus>
     :name param: str, the group at rank to split
-    :lower param: str, the lower rank into which the data is split
+    :lower param: str, lower rank or any categorical to group and color data
     :groups param: int or list, if int, the number of groups to consider at lower rank,
                    if list, the names of the groups
     :background param: bool, if True, include all observation in gray
@@ -143,7 +163,5 @@ def make_cmap(groups):
     Associate tab10 colors to names in a list of groups.
     """
     palette = sns.color_palette('tab10', len(groups))
-    # lightgray RGB code, supress warning about ragged ndarrays
-    palette.append((211/254, 211/254, 211/254))
-    colordict = {x: [palette[i]] for i, x in enumerate(groups)}
+    colordict = {x: palette[i] for i, x in enumerate(groups)}
     return colordict
