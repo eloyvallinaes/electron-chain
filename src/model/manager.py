@@ -1,5 +1,6 @@
 import os
 import glob
+import shutil
 import subprocess as sp
 
 class FastaManager():
@@ -8,21 +9,84 @@ class FastaManager():
     and AF2 over a set of selected protein sequences.
     
     Initialize with absolute path of fasta file. Filename, trimmed of
-    format, will be the new folder name
+    format, will be the new folder name.
+
     '''
 
     def __init__(self, fasta_path, models_folder):
         self.fasta_path = fasta_path
+        
         self.models_folder = models_folder
+        if not os.path.exists(self.models_folder):
+            os.mkdir(self.models_folder)
+        
+        newset = fasta_path.split('/')[-1].split('.')[0]
+        self.models_folder = models_folder+'/'+newset
+        if not os.path.exists(self.models_folder):
+            os.mkdir(self.models_folder)
+
+        self.cluster_path = self.models_folder+'/clusters.tsv'
+
+        self.single_fasta_folder = self.models_folder+'/models/'
+        if not os.path.exists(self.single_fasta_folder):
+            os.mkdir(self.single_fasta_folder)
+
+    def run_clustering(self, binary, thr='0.9'):
+        command = [binary,
+                   'createdb',
+                   self.fasta_path,
+                   self.models_folder+'/seqdb']
+        sp.run(command)
+        
+        if not os.path.exists(self.models_folder+'/tmp'):
+            os.mkdir(self.models_folder+'/tmp')
+        
+        command = [binary,
+                   'cluster',
+                   self.models_folder+'/seqdb',
+                   self.models_folder+'/clustering',
+                   self.models_folder+'/tmp',
+                   '--cluster-reassign',
+                   '1',
+                   '--min-seq-id',
+                   thr]
+        sp.run(command)
+
+        command = [binary,
+                   'createtsv',
+                   self.models_folder+'/seqdb',
+                   self.models_folder+'/seqdb',
+                   self.models_folder+'/clustering',
+                   self.cluster_path]
+        sp.run(command)
+
+        for path in glob.glob(self.models_folder+'/clustering.*'):
+            os.remove(path)
+        shutil.rmtree(self.models_folder+'/tmp')
+
+    def pick_fasta(self):
+        with open(self.fasta_path) as fasta_file:
+            fasta = ''.join([line for line in fasta_file])
+
+        fasta = fasta.split('>')[1:]
+        fasta = {'>'+entry.split('\n')[0].split()[0]:entry.split('\n')[1] \
+                 for entry in fasta}
  
-        # check cdhit exe
+        representatives = []
+        with open(self.cluster_path) as clusters:
+            for line in clusters:
+                repres = line.rstrip().split()[0]
+                if repres not in representatives:
+                    representatives.append(repres)
 
-    def run_cdhit_clustering(thr=0.9):
-        command = 'cd-hit'
-        sp.run()
-
-    def split_fasta():
-
+        with open(self.models_folder+'/id_list', 'w') as outlist:
+            for code, seq in fasta.items():
+                filename = code.split('|')[0].strip('>')
+                single_fasta_path = self.single_fasta_folder+filename+'.fasta'
+                if code.strip('>') in representatives:
+                    outlist.write(filename+'\n')
+                    with open(single_fasta_path, 'w') as out:
+                        out.write(code+'\n'+seq+'\n')
 
 
 class ModelManager():
