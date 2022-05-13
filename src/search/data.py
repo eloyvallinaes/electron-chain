@@ -14,16 +14,21 @@ taxcols = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
 
 def load_proteomedata(db):
     """
-    Find proteome data and load into a pandas DataFrame.
+    Find proteome data and load into a pandas DataFrame. For ncbi data, create
+    Name column for consistent merging with targets.
 
-    :param db: dataset, uniprot or ncbi
+    :param db: dataset, <uniprot|ncbi>
     :return: pd.DataFrame
     """
     data = []
     for dataset in PROTEOMEDATA.glob(f"*{db}*.csv"):
         data.append(pd.read_csv(dataset))
 
-    return pd.concat(data)
+    df = pd.concat(data)
+    if db == "ncbi":
+        df["Name"] = df.AssemblyID
+
+    return df
 
 
 def isocharge_artist(ax, df, label = None, color = "tab:blue", diagonals=True):
@@ -65,6 +70,21 @@ def isocharge_artist(ax, df, label = None, color = "tab:blue", diagonals=True):
         # iso-charge diagonals
         for i in np.arange(0, 0.25, 0.025):
             ax.plot([0, 0.3 - i], [i ,0.3], linestyle = "--", color= "k", zorder = 5)
+
+    return ax
+
+
+def target_proteome_merge(targets, proteomes):
+    """
+    Combine protein-proteome dataframes.
+    """
+    return targets.merge(
+                    proteomes.drop(taxcols, axis = 1),
+                    left_on="proteomecode",
+                    right_on="Name",
+                    how = "left"
+                )
+
 
 def isocharge_draw(ax, df, rank = "", name = "",
                    lower = "", groups = 10, colors = None):

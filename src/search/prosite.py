@@ -10,7 +10,7 @@ from src.config import PROSITES
 columns = [
         'protein',
         'hit_start',
-        'hit end',
+        'hit_end',
         'motif',
         'scorex',
         'scorey',
