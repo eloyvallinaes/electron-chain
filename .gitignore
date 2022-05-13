@@ -1,4 +1,5 @@
 data/
+refs/
 
 __pycache__/
 *.pyc
