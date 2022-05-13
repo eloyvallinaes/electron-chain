@@ -1,0 +1,104 @@
+# STOCKHOLM 1.0
+
+#=GS D8J3X4|Halocyanin DE    domain protein (Halocyanin domain-containing protein)|MW=17094.0Da
+#=GS Q9HPH3|Halocyanin DE    HcpA (Halocyanin-like)|MW=30554.0Da
+#=GS       D7E936|Blue DE    (Type 1) copper domain protein|MW=14380.0Da
+#=GS       A4YG15|Blue DE    (Type 1) copper domain protein|MW=57236.0Da
+#=GS        A8A8H0|ABC DE    transporter related|MW=67959.0Da
+
+D8J3X4|Halocyanin  -MQSDPLLDRR-----SVLRAAGTLSVAALAGCTGQEEGGDDGPDYETVP
+Q9HPH3|Halocyanin  MSAMGRAPDRR-----TFLRSAVAGGLAAIAGCTDRTTTGTTNQQPTTTH
+D7E936|Blue        ---MKKL----------FMILAILISVFLAIGCAGNQQN-----------
+A4YG15|Blue        ---MRRIFKRIPKASLLFFLVAGLFGLPMAISATTPTPQ-----------
+A8A8H0|ABC         ---MERTVPRVAVIDKELCK-PDKCNYECIRFCPINKTG-----------
+
+D8J3X4|Halocyanin  S---EEEPDYGGWLDSARTYDGTADLRGESEVTVMVGTGSRGRSFSPAAI
+Q9HPH3|Halocyanin  TETQPSEMSLHEWVTSANTPESWTDHRGDATVSIAVGGHDLPYAFQPALT
+D7E936|Blue        ---------------------GGTEDNGEDGAVETTNVIMEDIQFKPATI
+A4YG15|Blue        ---------------------HWI--VYVGGQAMSGNTMIMTMGYFPEII
+A8A8H0|ABC         --------------------RNKAIELGED--------------------
+
+D8J3X4|Halocyanin  MVDPGTTVVWEWTGDGGGHNV------------------------AEENE
+Q9HPH3|Halocyanin  RVAPGTTVTWEWTGYGGAHNV------------------------IAVDS
+D7E936|Blue        QISVGDTVTWTNEDST-EHTVT--------------------------SD
+A4YG15|Blue        TIDVGDSITFVINSTE-PHTITFLSGNPPLNPFSPQALAPIGGSVYNGTG
+A8A8H0|ABC         ----GKPIIHELVCTGCGICIK-------KCPFQAI--------------
+
+D8J3X4|Halocyanin  AYESPI-ETEEGYTFEHAFEEPGVSRYTCIPHDAQGMRGAVAIAE-----
+Q9HPH3|Halocyanin  AFDSGDSTATEDHTFTHTFTEIGTHRYVSEPDRESGMKGIIAVEEYPTSG
+D7E936|Blue        NFDSG--NLEQGETFTHTFNEAGVYDYQCTIHP--SMTGTVIVGDVDT-G
+A4YG15|Blue        IVSSG--LLSQGQNYTLTFTKAGVYVYQCLIHP--GMMGVVIVNPAGT-P
+A8A8H0|ABC         --HIENLPEEVEEKLVHRYGKNGFALYGLPVPKRGQVTGIIGRNGAGKST
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  YP-------------DVDRWLSPVHDYDGTVVTDTTTVTVGDTSSGSTQ-
+D7E936|Blue        TG-------------NTNN------DGT----------------GGY---
+A4YG15|Blue        YP-------------MTQA------QYDQLASQQSS----QSLASGLSL-
+A8A8H0|ABC         SLKILSGLLKPNLGKEEASWDEVLKRFRGTELFN----YLKDLANGKIRV
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  -------------FD-------------PLVLKVPEGT--TVQWKWA---
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        -------------LQ-------------QVNLPATQGPNGTVIWHVDVGQ
+A8A8H0|ABC         AYKLQYVAEAAKLLKGTVGQLLARVDERGIAREVAQALNIAHLWERDVRK
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------GEESGGA-----
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        QTPVSTEVTLNSMNSKVSGSAILTMTAPGVLTVQVSLTGLLPGETYNVGI
+A8A8H0|ABC         L----------------SGGELQRFLIAAVLS------------------
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        FQGAAEAGGKSLYNLNPVVEASNGTGSSVTTLTLPPLSPFIPTSFGIPSA
+A8A8H0|ABC         -------KDADLYAFDEPAAYLDVKE-R--INMARAIKKFVPPN------
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        GWYINVSNS----GNAVAAGDIIFPVSSVMGFLPNTLTIHAGDTVVWTDV
+A8A8H0|ABC         RYVLIIEHDLAILDYLSDLVHIVYGVPGVYGIVSQPYSTRVGINHYIRGF
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  -----HNVAFKSAAIGIQELRS-----------------------EPGVH
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        DPDEVHTVTFVPQGMPIPEFGTPTSLIPTKSHIFNGTGYYNSGPMIAGVS
+A8A8H0|ABC         LPSENMRIRDKPITFVNPELREKV----------V----------STEVY
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  VTHTFNSTGTYRYFCSPHSELSGRGAIIVE--------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        YNLTFVTPGVYTYVCLLHDGMGMVGTIIVLPSTP----------------
+A8A8H0|ABC         LEWPFMTKKLGDFVLEVNPGEIHRGEIIGILGPNGIGKSTFIKLIAGILK
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        -----SSNPQATL------LSKQMSELNNTLN----SLNSQVSQIGSLTS
+A8A8H0|ABC         PDNADFVLPQLRLAYKPQYVTHEMFGKNETVKDVLRKVRSDFLDTSSWY-
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        QVGQLNSQVSSLNSQVSQIG---SLSSQISSLNGSQASY-ENS-VNSKIS
+A8A8H0|ABC         -----------YVEVVKRLGLNRLLEKEVKHLSGGELQKLAVAVTLGKEA
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        SLYSL------------------------------LTVLIVLVVISLILN
+A8A8H0|ABC         DLYLLDEPSAFLDVEERLAVGDAIRHIVEGSGAAAFVVDHDLVMIDLITD
+
+D8J3X4|Halocyanin  --------------------------------------------------
+Q9HPH3|Halocyanin  --------------------------------------------------
+D7E936|Blue        --------------------------------------------------
+A4YG15|Blue        VVLIARRR------------------------------------------
+A8A8H0|ABC         RVMVFKGEPGKHGVAEPPTSLRRGMNEFLKELGITFRRDPETGRPRVNKE
+
+D8J3X4|Halocyanin  ----------------------
+Q9HPH3|Halocyanin  ----------------------
+D7E936|Blue        ----------------------
+A4YG15|Blue        ----------------------
+A8A8H0|ABC         GSRLDRMQKSIGEYYYTLPARE
+//

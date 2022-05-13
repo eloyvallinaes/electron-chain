@@ -1,0 +1,7 @@
+Ran search.run with parameters:db: uniprot
+group: test10
+query: searches/queries/P39442.fasta
+outdir: searches/halocyanin/test10/uniprot
+resume: False
+filter_name: .*
+filter_mw: inf
